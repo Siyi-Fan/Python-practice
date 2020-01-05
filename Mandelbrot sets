@@ -1,0 +1,43 @@
+Using Python to draw fractal graphics
+=======
+Mandelbrot sets
+------
+```python
+import numpy as np
+import time
+from matplotlib import cm
+import matplotlib.pyplot as plt
+
+def iter_point(c):
+    z = c
+    for i in range(1, 100): # maximum iteration time=100
+        if abs(z)>2: break # if radius larger than 2, it escapes
+        z = z*z+c
+    return i # return the iteration time
+
+def draw_mandelbrot(cx, cy, d):
+    """
+    draw the Mandelbrot sets that are d distance away from (cx,cy)
+    
+    """
+    x0, x1, y0, y1 = cx-d, cx+d, cy-d, cy+d 
+    y, x = np.ogrid[y0:y1:200j, x0:x1:200j]
+    c = x + y*1j
+    start = time.clock()
+    mandelbrot = np.frompyfunc(iter_point,1,1)(c).astype(np.float)
+    print("time=", time.clock() - start)
+    plt.imshow(mandelbrot, cmap=cm.jet, extent=[x0,x1,y0,y1])
+    plt.gca().set_axis_off()
+
+x,y = 0.27322626, 0.595153338
+
+plt.subplot(231)
+draw_mandelbrot(-0.5,0,1.5)
+for i in range(2,7):    
+    plt.subplot(230+i)
+    draw_mandelbrot(x, y, 0.2**(i-1))
+plt.subplots_adjust(0.02, 0, 0.98, 1, 0.02, 0)#
+plt.show()#
+
+plt.savefig("Mandelbrot set.png")#save the figure
+```
